@@ -21,3 +21,8 @@ func OnError(record *C.RecordingEnginex, error1, statCode C.int) {
 func OnUserJoinedCallBack(record *C.RecordingEnginex, uid C.uint) {
 	fmt.Println(record, uid)
 }
+
+//export OnUserJoinedCallBack
+func OnUserJoinedCallBack123(record *C.RecordingEnginex, uid C.uint) {
+	fmt.Println(record, uid)
+}
