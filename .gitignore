@@ -1,3 +1,9 @@
 *.swn
 *.swp
 *.swo
+*.sw*
+*.a
+*.o
+.idea/
+cpp/.DS_Store
+agora-record-go-v2

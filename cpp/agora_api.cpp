@@ -3,20 +3,20 @@
 //#include "common.h"
 #include "agorasdk/Agorasdk.h"
 #include "agora_api.h"
-//using namespace std;
+using namespace std;
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-AGORA_API RecordingEnginex* CreateRecordingEngine(int a){
+AGORA_API RecordingEnginex* CreateRecordingEngine(){
    return (RecordingEnginex*)new agora::AgoraSdk ();
 }
 
-AGORA_API void SetOnErrorEventHandler(RecordingEnginex* handler, void* onError){
+AGORA_API void SetOnErrorEventHandler(RecordingEnginex* handler, ponError onError){
 
 }
 
-//#ifdef __cplusplus
-//};
-//#endif
+#ifdef __cplusplus
+};
+#endif
