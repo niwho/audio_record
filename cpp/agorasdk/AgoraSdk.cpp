@@ -178,15 +178,18 @@ void AgoraSdk::onWarningImpl(int warn) {
     cerr << "clear peer list " << endl;
         m_peers.clear();
     }
+    m_onWarning((RecordingEnginex*)(this), warn);
     //  leaveChannel();
 }
 
 void AgoraSdk::onJoinChannelSuccessImpl(const char * channelId, agora::linuxsdk::uid_t uid) {
     cout << "join channel Id: " << channelId << ", with uid: " << uid << endl;
+    m_onJoinChannelSuccess((RecordingEnginex*)(this), channelId, uid);
 }
 
 void AgoraSdk::onLeaveChannelImpl(agora::linuxsdk::LEAVE_PATH_CODE code) {
     cout << "leave channel with code:" << code << endl;
+    m_onLeaveChannel((RecordingEnginex*)(this), code);
 }
 
 void AgoraSdk::onUserJoinedImpl(unsigned uid, agora::linuxsdk::UserJoinInfos &infos) {
@@ -200,6 +203,8 @@ void AgoraSdk::onUserJoinedImpl(unsigned uid, agora::linuxsdk::UserJoinInfos &in
 
     //When the user joined, we can re-layout the canvas
     setVideoMixLayout();
+
+    m_onUserJoined((RecordingEnginex*)(this), uid, (::UserJoinInfos*) &infos);
 }
 
 
@@ -209,6 +214,8 @@ void AgoraSdk::onUserOfflineImpl(unsigned uid, agora::linuxsdk::USER_OFFLINE_REA
 
     //When the user is offline, we can re-layout the canvas
     setVideoMixLayout();
+
+    m_onUserOffline((RecordingEnginex*)(this), uid, int(reason));
 }
 
 void AgoraSdk::audioFrameReceivedImpl(unsigned int uid, const agora::linuxsdk::AudioFrame *pframe) const
@@ -270,6 +277,8 @@ void AgoraSdk::audioFrameReceivedImpl(unsigned int uid, const agora::linuxsdk::A
 
   ::fwrite(data, 1, size, fp);
   ::fclose(fp);
+
+  m_audioFrameReceived((RecordingEnginex*)(this), uid, (::AudioFrame*)pframe);
 }
 
 uint32_t AgoraSdk::now_s() const {
@@ -357,10 +366,12 @@ void AgoraSdk::videoFrameReceivedImpl(unsigned int uid, const agora::linuxsdk::V
   }
   ::fclose(fp);
 
+  m_videoFrameReceived((RecordingEnginex*)(this), uid, (::VideoFrame*)pframe);
 }
 
 void AgoraSdk::onActiveSpeakerImpl(uid_t uid) {
     cout << "User: " << uid << " is speaking" << endl;
+    m_onActiveSpeaker((RecordingEnginex*)(this), uid);
 }
 
 void AgoraSdk::onAudioVolumeIndicationImpl(const linuxsdk::AudioVolumeInfo* speakers, unsigned int speakerNum) {
@@ -368,15 +379,18 @@ void AgoraSdk::onAudioVolumeIndicationImpl(const linuxsdk::AudioVolumeInfo* spea
     for(uint32_t i = 0; i < speakerNum; i++) {
         cout << "User: " << speakers[i].uid << ", volume is " << speakers[i].volume << endl;
     }
+    m_onAudioVolumeIndication((RecordingEnginex*)(this), (::AudioVolumeInfo*)speakers, speakerNum);
 }
 
 void AgoraSdk::onFirstRemoteVideoDecodedImpl(uid_t uid, int width, int height, int elapsed) {
     cout <<"onFirstRemoteVideoDecoded,"<<":User " << uid << " width:" << width << " height:"
       << height << ", elapsed:"<< elapsed <<endl;
+      m_onFirstRemoteVideoDecoded((RecordingEnginex*)(this), uid, width, height, elapsed);
 }
 
 void AgoraSdk::onFirstRemoteAudioFrameImpl(uid_t uid, int elapsed) {
     cout << "onFirstRemoteAudioFrame,"<<"User " << uid << ", elapsed:"<< elapsed <<endl;
+    m_onFirstRemoteAudioFrame((RecordingEnginex*)(this), uid, elapsed);
 }
 
 void AgoraSdk::onReceivingStreamStatusChangedImpl(bool receivingAudio, bool receivingVideo) {
@@ -384,14 +398,18 @@ void AgoraSdk::onReceivingStreamStatusChangedImpl(bool receivingAudio, bool rece
     cout << "pre receiving audio status is " << m_receivingAudio << " now receiving audio status is " << receivingAudio << endl;
     m_receivingAudio = receivingAudio;
     m_receivingVideo = receivingVideo;
+
+    m_onReceivingStreamStatusChanged((RecordingEnginex*)(this), int(receivingAudio), int(receivingVideo));
 }
 
 void AgoraSdk::onConnectionLostImpl() {
     cout << "connection is lost" << endl;
+    m_onConnectionLost((RecordingEnginex*)(this));
 }
 
 void AgoraSdk::onConnectionInterruptedImpl() {
     cout << "connection is interrupted" << endl;
+    m_onConnectionInterrupted((RecordingEnginex*)(this));
 }
 
 void AgoraSdk::adjustDefaultVideoLayout(agora::linuxsdk::VideoMixingLayout::Region * regionList) {
@@ -697,8 +715,52 @@ void AgoraSdk::adjustBestFitVideoLayout(agora::linuxsdk::VideoMixingLayout::Regi
     }
 }
 
-void AgoraSdk::setOnErrorEventHandler(pOnError onError){
+void AgoraSdk::setOnError(pOnError onError){
    m_onError = onError; 
 }
+
+void AgoraSdk::SetOnWarning(pOnWarning onWarning){
+    m_onWarning = onWarning;
+}
+void AgoraSdk::SetOnJoinChannelSuccess(pOnJoinChannelSuccess onJoinChannelSuccess){
+    m_onJoinChannelSuccess = onJoinChannelSuccess;
+}
+void AgoraSdk::SetOnLeaveChannel(pOnLeaveChannel onLeaveChannel){
+    m_onLeaveChannel = onLeaveChannel;
+}
+void AgoraSdk::SetOnUserJoined(pOnUserJoined onUserJoined){
+    m_onUserJoined = onUserJoined;
+}
+void AgoraSdk::SetOnUserOffline(pOnUserOffline onUserOffline){
+    m_onUserOffline = onUserOffline;
+}
+void AgoraSdk::SetAudioFrameReceived(pAudioFrameReceived audioFrameReceived){
+    m_audioFrameReceived = audioFrameReceived;
+}
+void AgoraSdk::SetVideoFrameReceived(pVideoFrameReceived videoFrameReceived){
+    m_videoFrameReceived = videoFrameReceived;
+}
+void AgoraSdk::SetOnActiveSpeaker(pOnActiveSpeaker onActiveSpeaker){
+    m_onActiveSpeaker = onActiveSpeaker;
+}
+void AgoraSdk::SetOnAudioVolumeIndication(pOnAudioVolumeIndication onAudioVolumeIndication){
+    m_onAudioVolumeIndication = onAudioVolumeIndication;
+}
+void AgoraSdk::SetOnFirstRemoteVideoDecoded(pOnFirstRemoteVideoDecoded onFirstRemoteVideoDecoded){
+    m_onFirstRemoteVideoDecoded = onFirstRemoteVideoDecoded;
+}
+void AgoraSdk::SetOnFirstRemoteAudioFrame(pOnFirstRemoteAudioFrame onFirstRemoteAudioFrame){
+    m_onFirstRemoteAudioFrame = onFirstRemoteAudioFrame;
+}
+void AgoraSdk::SetOnReceivingStreamStatusChanged(pOnReceivingStreamStatusChanged onReceivingStreamStatusChanged){
+    m_onReceivingStreamStatusChanged = onReceivingStreamStatusChanged;
+}
+void AgoraSdk::SetOnConnectionLost(pOnConnectionLost onConnectionLost){
+    m_onConnectionLost = onConnectionLost;
+}
+void AgoraSdk::SetOnConnectionInterrupted(pOnConnectionInterrupted onConnectionInterrupted){
+    m_onConnectionInterrupted = onConnectionInterrupted;
+}
+
 }
 

@@ -3,17 +3,21 @@
 
 #include "common.h"
 //#include "record.h"
+#include "user_join_info.h"
+#include "recording_config.h"
+#include "RecordingEngineProperties.h"
+#include "miscellaneous.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct RecordingEnginex RecordingEnginex;
-typedef struct UserJoinInfos UserJoinInfos;
-typedef struct AudioFrame AudioFrame;
-typedef struct VideoFrame VideoFrame;
-typedef struct AudioVolumeInfo AudioVolumeInfo;
-typedef struct RecordingConfig RecordingConfig;
-typedef struct RecordingEngineProperties RecordingEngineProperties;
+//typedef struct UserJoinInfos UserJoinInfos; //user_join_info.h
+//typedef struct AudioFrame AudioFrame;//miscellaneous.h
+//typedef struct VideoFrame VideoFrame;//miscellaneous.h
+//typedef struct AudioVolumeInfo AudioVolumeInfo;//miscellaneous.h
+//typedef struct RecordingConfig RecordingConfig; //recording_config.h
+//typedef struct RecordingEngineProperties RecordingEngineProperties; //RecordingEngineProperties.h
 
 // UserJoinInfos
 
@@ -25,7 +29,7 @@ typedef struct RecordingEngineProperties RecordingEngineProperties;
 // AudioVolumeInfo
 
 // RecordingConfig
-AGORA_API RecordingConfig* CreateRecordingConfig();
+
 
 // RecordingEngineProperties
 
@@ -55,7 +59,7 @@ AGORA_API int Release(RecordingEnginex*record);
 AGORA_API int Stopped(RecordingEnginex*record);
 AGORA_API void UpdateMixModeSetting(RecordingEnginex *record, int width, int height, int isVideoMix);
 AGORA_API RecordingEngineProperties* GetRecorderProperties(RecordingEnginex*record);
-AGORA_API void UpdateStorageDir(const char* dir);
+AGORA_API void UpdateStorageDir(RecordingEnginex *record, const char* dir);
 AGORA_API void UpdateLayoutSetting(RecordingEnginex*record, int layoutMode, int maxVertPreLayoutUid);
 AGORA_API int StartService(RecordingEnginex*record);
 AGORA_API int StopService(RecordingEnginex*record);

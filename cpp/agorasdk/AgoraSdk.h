@@ -48,8 +48,36 @@ struct MixModeSettings {
 class AgoraSdk : virtual public agora::recording::IRecordingEngineEventHandler {
     private:
         pOnError m_onError;
+        pOnWarning m_onWarning;
+        pOnJoinChannelSuccess m_onJoinChannelSuccess;
+        pOnLeaveChannel m_onLeaveChannel;
+        pOnUserJoined m_onUserJoined;
+        pOnUserOffline m_onUserOffline;
+        pAudioFrameReceived m_audioFrameReceived;
+        pVideoFrameReceived m_videoFrameReceived;
+        pOnActiveSpeaker m_onActiveSpeaker;
+        pOnAudioVolumeIndication m_onAudioVolumeIndication;
+        pOnFirstRemoteVideoDecoded m_onFirstRemoteVideoDecoded;
+        pOnFirstRemoteAudioFrame m_onFirstRemoteAudioFrame;
+        pOnReceivingStreamStatusChanged m_onReceivingStreamStatusChanged;
+        pOnConnectionLost m_onConnectionLost;
+        pOnConnectionInterrupted m_onConnectionInterrupted;
     public:
-        void setOnErrorEventHandler(pOnError onError);
+        void setOnError(pOnError onError);
+        void SetOnWarning(pOnWarning onWarning);
+        void SetOnJoinChannelSuccess(pOnJoinChannelSuccess onJoinChannelSuccess);
+        void SetOnLeaveChannel(pOnLeaveChannel onLeaveChannel);
+        void SetOnUserJoined(pOnUserJoined onUserJoined);
+        void SetOnUserOffline(pOnUserOffline onUserOffline);
+        void SetAudioFrameReceived(pAudioFrameReceived audioFrameReceived);
+        void SetVideoFrameReceived(pVideoFrameReceived videoFrameReceived);
+        void SetOnActiveSpeaker(pOnActiveSpeaker onActiveSpeaker);
+        void SetOnAudioVolumeIndication(pOnAudioVolumeIndication onAudioVolumeIndication);
+        void SetOnFirstRemoteVideoDecoded(pOnFirstRemoteVideoDecoded onFirstRemoteVideoDecoded);
+        void SetOnFirstRemoteAudioFrame(pOnFirstRemoteAudioFrame onFirstRemoteAudioFrame);
+        void SetOnReceivingStreamStatusChanged(pOnReceivingStreamStatusChanged onReceivingStreamStatusChanged);
+        void SetOnConnectionLost(pOnConnectionLost onConnectionLost);
+        void SetOnConnectionInterrupted(pOnConnectionInterrupted onConnectionInterrupted);
     public:
         AgoraSdk();
         virtual ~AgoraSdk();
