@@ -47,9 +47,9 @@ struct MixModeSettings {
 
 class AgoraSdk : virtual public agora::recording::IRecordingEngineEventHandler {
     private:
-        ponError m_onError;
+        pOnError m_onError;
     public:
-        void setOnErrorEventHandler(ponError onError);
+        void setOnErrorEventHandler(pOnError onError);
     public:
         AgoraSdk();
         virtual ~AgoraSdk();

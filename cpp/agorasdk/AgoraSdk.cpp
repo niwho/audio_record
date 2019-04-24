@@ -168,6 +168,7 @@ const agora::recording::RecordingEngineProperties* AgoraSdk::getRecorderProperti
 
 void AgoraSdk::onErrorImpl(int error, agora::linuxsdk::STAT_CODE_TYPE stat_code) {
     cerr << "Error: " << error <<",with stat_code:"<< stat_code << endl;
+    m_onError((RecordingEnginex*)(this), error, int(stat_code));
     stoppedOnError();
 }
 
@@ -696,7 +697,7 @@ void AgoraSdk::adjustBestFitVideoLayout(agora::linuxsdk::VideoMixingLayout::Regi
     }
 }
 
-void AgoraSdk::setOnErrorEventHandler(ponError onError){
+void AgoraSdk::setOnErrorEventHandler(pOnError onError){
    m_onError = onError; 
 }
 }
