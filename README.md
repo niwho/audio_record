@@ -6,7 +6,7 @@
 
 # 示例
 ```golang
-ackage main // import "github.com/niwho/record_demo"
+package main // import "github.com/niwho/record_demo"
 
 import "fmt"
 import "github.com/niwho/audio_record"
