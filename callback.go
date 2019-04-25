@@ -1,4 +1,4 @@
-package main
+package audio_record
 
 /*
 #cgo LDFLAGS: -L${SRCDIR}/cpp/libs  -L${SRCDIR}/cpp -lrecorder -lmyagora -lstdc++
@@ -22,7 +22,7 @@ func onError(record *C.RecordingEnginex, err, statCode int) {
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnError !=nil{
+	if agora.(*defaultAgoraRecord).mOnError != nil {
 		agora.(*defaultAgoraRecord).mOnError(err, statCode)
 	}
 	fmt.Println(record, err, statCode)
@@ -35,7 +35,7 @@ func onWarning(record *C.RecordingEnginex, warn int) {
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnWarning !=nil{
+	if agora.(*defaultAgoraRecord).mOnWarning != nil {
 		agora.(*defaultAgoraRecord).mOnWarning(warn)
 	}
 }
@@ -47,7 +47,7 @@ func onJoinChannelSuccess(record *C.RecordingEnginex, channel *C.char, uid uint)
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnJoinChannelSuccess !=nil{
+	if agora.(*defaultAgoraRecord).mOnJoinChannelSuccess != nil {
 		agora.(*defaultAgoraRecord).mOnJoinChannelSuccess(C.GoString(channel), uid)
 	}
 }
@@ -60,7 +60,7 @@ func onLeaveChannel(record *C.RecordingEnginex, code int) {
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnLeaveChannel !=nil{
+	if agora.(*defaultAgoraRecord).mOnLeaveChannel != nil {
 		agora.(*defaultAgoraRecord).mOnLeaveChannel(code)
 	}
 }
@@ -74,7 +74,7 @@ func onUserJoined(record *C.RecordingEnginex, uid uint, cinfos *C.UserJoinInfos)
 		return
 	}
 	//todo
-	if agora.(*defaultAgoraRecord).mOnUserJoined !=nil{
+	if agora.(*defaultAgoraRecord).mOnUserJoined != nil {
 		infos := CUserJoinInfosToGo(cinfos)
 		agora.(*defaultAgoraRecord).mOnUserJoined(uid, infos)
 	}
@@ -87,7 +87,7 @@ func onUserOffline(record *C.RecordingEnginex, uid uint, reason int) {
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnUserOffline !=nil{
+	if agora.(*defaultAgoraRecord).mOnUserOffline != nil {
 		agora.(*defaultAgoraRecord).mOnUserOffline(uid, reason)
 	}
 
@@ -101,7 +101,7 @@ func audioFrameReceived(record *C.RecordingEnginex, uid uint, cframe *C.AudioFra
 		return
 	}
 	//todo
-	if agora.(*defaultAgoraRecord).mAudioFrameReceived !=nil{
+	if agora.(*defaultAgoraRecord).mAudioFrameReceived != nil {
 		frame := CAudioFrameToGo(cframe)
 		agora.(*defaultAgoraRecord).mAudioFrameReceived(uid, frame)
 	}
@@ -129,7 +129,7 @@ func onActiveSpeaker(record *C.RecordingEnginex, uid uint) {
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnActiveSpeaker !=nil{
+	if agora.(*defaultAgoraRecord).mOnActiveSpeaker != nil {
 		agora.(*defaultAgoraRecord).mOnActiveSpeaker(uid)
 	}
 
@@ -142,7 +142,7 @@ func onAudioVolumeIndication(record *C.RecordingEnginex, cspeakers *C.AudioVolum
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnAudioVolumeIndication !=nil{
+	if agora.(*defaultAgoraRecord).mOnAudioVolumeIndication != nil {
 		//todo AudioVolumeInfo
 		speakers := CAudioVolumeInfo(cspeakers)
 		agora.(*defaultAgoraRecord).mOnAudioVolumeIndication(speakers, speakerNum)
@@ -157,7 +157,7 @@ func onFirstRemoteVideoDecoded(record *C.RecordingEnginex, uid uint, width int, 
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnFirstRemoteVideoDecoded !=nil{
+	if agora.(*defaultAgoraRecord).mOnFirstRemoteVideoDecoded != nil {
 		agora.(*defaultAgoraRecord).mOnFirstRemoteVideoDecoded(uid, width, height, elapsed)
 	}
 
@@ -170,7 +170,7 @@ func onFirstRemoteAudioFrame(record *C.RecordingEnginex, uid uint, elapsed int) 
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnFirstRemoteAudioFrame !=nil{
+	if agora.(*defaultAgoraRecord).mOnFirstRemoteAudioFrame != nil {
 		agora.(*defaultAgoraRecord).mOnFirstRemoteAudioFrame(uid, elapsed)
 	}
 
@@ -184,13 +184,13 @@ func onReceivingStreamStatusChanged(record *C.RecordingEnginex, receivingAudio i
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnReceivingStreamStatusChanged !=nil{
+	if agora.(*defaultAgoraRecord).mOnReceivingStreamStatusChanged != nil {
 		ra := true
-		if receivingAudio==0{
+		if receivingAudio == 0 {
 			ra = false
 		}
 		rv := true
-		if receivingVideo==0{
+		if receivingVideo == 0 {
 			rv = false
 		}
 		agora.(*defaultAgoraRecord).mOnReceivingStreamStatusChanged(ra, rv)
@@ -205,8 +205,8 @@ func onConnectionLost(record *C.RecordingEnginex) {
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnConnectionLost !=nil{
-		agora.(*defaultAgoraRecord).mOnConnectionLost ()
+	if agora.(*defaultAgoraRecord).mOnConnectionLost != nil {
+		agora.(*defaultAgoraRecord).mOnConnectionLost()
 	}
 }
 
@@ -218,7 +218,7 @@ func onConnectionInterrupted(record *C.RecordingEnginex) {
 		//return C.int(ReConsumeLater)
 		return
 	}
-	if agora.(*defaultAgoraRecord).mOnConnectionInterrupted !=nil{
+	if agora.(*defaultAgoraRecord).mOnConnectionInterrupted != nil {
 		agora.(*defaultAgoraRecord).mOnConnectionInterrupted()
 	}
 }

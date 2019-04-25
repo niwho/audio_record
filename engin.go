@@ -1,4 +1,4 @@
-package main // import "code.rightpaddle.cn/audio_record"
+package audio_record // import "code.rightpaddle.cn/audio_record"
 /*
 #cgo LDFLAGS: -L${SRCDIR}/cpp/libs  -L${SRCDIR}/cpp -lmyagora -lstdc++ -pthread -lpthread -lrecorder -lrt -lm
 
@@ -73,7 +73,6 @@ onConnectionInterrupted(record);
 import "C"
 
 import (
-	"fmt"
 	"unsafe"
 )
 
@@ -92,7 +91,7 @@ type AudioVolumeInfo struct {
 
 type RecordingConfig struct {
 	ChannelProfile int
-	IsAudioOnly bool
+	IsAudioOnly    bool
 }
 
 type RecordingEngineProperties struct {
@@ -111,50 +110,49 @@ func RecordingConfigToCgo(config RecordingConfig) *C.RecordingConfig {
 func CRecordingConfigToGo(cconfig *C.RecordingConfig) RecordingConfig {
 
 	channelProfile := int(C.RCGetChannelProfileType(cconfig))
-	audioOnly  := C.int(C.RCGetIsAudioOnly(cconfig))
+	audioOnly := C.int(C.RCGetIsAudioOnly(cconfig))
 	isAudioOnly := true
-	if audioOnly==0{
+	if audioOnly == 0 {
 		isAudioOnly = false
 	}
 	config := RecordingConfig{
 		ChannelProfile: channelProfile,
-		IsAudioOnly: isAudioOnly,
+		IsAudioOnly:    isAudioOnly,
 	}
 
 	return config
 }
 
-func CUserJoinInfosToGo(cuserJoinInfos *C.UserJoinInfos) UserJoinInfos{
+func CUserJoinInfosToGo(cuserJoinInfos *C.UserJoinInfos) UserJoinInfos {
 	return UserJoinInfos{}
 }
 
-func CAudioFrameToGo(ccf *C.AudioFrame) AudioFrame{
+func CAudioFrameToGo(ccf *C.AudioFrame) AudioFrame {
 
 	return AudioFrame{}
 }
 
-func CVideoFrameToGo(ccf *C.VideoFrame) VideoFrame{
+func CVideoFrameToGo(ccf *C.VideoFrame) VideoFrame {
 
 	return VideoFrame{}
 }
 
-func CAudioVolumeInfo(cavi *C.AudioVolumeInfo) AudioVolumeInfo{
+func CAudioVolumeInfo(cavi *C.AudioVolumeInfo) AudioVolumeInfo {
 
 	return AudioVolumeInfo{}
 }
 
-
-func RecorderPropertiesToGo(rp *C.RecordingEngineProperties) RecordingEngineProperties{
+func RecorderPropertiesToGo(rp *C.RecordingEngineProperties) RecordingEngineProperties {
 
 	dir := C.GoString(C.REPGetStorageDir(rp))
 	goRp := RecordingEngineProperties{
-		StorageDir :dir,
+		StorageDir: dir,
 	}
 	return goRp
 }
 
 type IAgoraRecord interface {
-	CreateChannel(appId string, channelKey string, name string,uid uint, config RecordingConfig) int
+	CreateChannel(appId string, channelKey string, name string, uid uint, config RecordingConfig) int
 	SetVideoMixLayout() int
 	LeaveChannel() int
 	StoppedOnError() int
@@ -192,16 +190,16 @@ type IAgoraRecord interface {
 type defaultAgoraRecord struct {
 	RecordingEnginex *C.RecordingEnginex
 
-	mOnError                        func(int, int)
+	mOnError                        func(err int, statCode int)
 	mOnWarning                      func(warn int)
-	mOnJoinChannelSuccess           func(string, uint)
-	mOnLeaveChannel                 func(int)
-	mOnUserJoined                   func(uint, UserJoinInfos)
+	mOnJoinChannelSuccess           func(channelId string, uid uint)
+	mOnLeaveChannel                 func(code int)
+	mOnUserJoined                   func(uid uint, infos UserJoinInfos)
 	mOnUserOffline                  func(uid uint, reason int)
-	mAudioFrameReceived             func(uint, AudioFrame)
-	mVideoFrameReceived             func(uint, VideoFrame)
-	mOnActiveSpeaker                func(uint)
-	mOnAudioVolumeIndication        func(AudioVolumeInfo, uint)
+	mAudioFrameReceived             func(uid uint, frame AudioFrame)
+	mVideoFrameReceived             func(uid uint, frame VideoFrame)
+	mOnActiveSpeaker                func(uid uint)
+	mOnAudioVolumeIndication        func(speakers AudioVolumeInfo, speakerNum uint)
 	mOnFirstRemoteVideoDecoded      func(uid uint, width int, height int, elapsed int)
 	mOnFirstRemoteAudioFrame        func(uid uint, elapsed int)
 	mOnReceivingStreamStatusChanged func(receivingAudio bool, receivingVideo bool)
@@ -214,32 +212,31 @@ func NewAgoraRecord() IAgoraRecord {
 	ar.RecordingEnginex = C.CreateRecordingEngine()
 
 	C.SetOnError(ar.RecordingEnginex, (C.pOnError)(unsafe.Pointer(C.onErrorCgo)))
-	C.SetOnWarning(ar.RecordingEnginex,(C.pOnWarning)(unsafe.Pointer(C.onWarningCgo)))
-	C.SetOnJoinChannelSuccess(ar.RecordingEnginex,(C.pOnJoinChannelSuccess)(unsafe.Pointer(C.onJoinChannelSuccessCgo)))
-	C.SetOnLeaveChannel(ar.RecordingEnginex,(C.pOnLeaveChannel)(unsafe.Pointer(C.onLeaveChannelCgo)))
-	C.SetOnUserJoined(ar.RecordingEnginex,(C.pOnUserJoined)(unsafe.Pointer(C.onUserJoinedCgo)))
-	C.SetOnUserOffline(ar.RecordingEnginex,(C.pOnUserOffline)(unsafe.Pointer(C.onUserOfflineCgo)))
-	C.SetAudioFrameReceived(ar.RecordingEnginex,(C.pAudioFrameReceived)(unsafe.Pointer(C.audioFrameReceivedCgo)))
-	C.SetVideoFrameReceived(ar.RecordingEnginex,(C.pVideoFrameReceived)(unsafe.Pointer(C.videoFrameReceivedCgo)))
-	C.SetOnActiveSpeaker(ar.RecordingEnginex,(C.pOnActiveSpeaker)(unsafe.Pointer(C.onActiveSpeakerCgo)))
-	C.SetOnAudioVolumeIndication(ar.RecordingEnginex,(C.pOnAudioVolumeIndication)(unsafe.Pointer(C.onAudioVolumeIndicationCgo)))
-	C.SetOnFirstRemoteVideoDecoded(ar.RecordingEnginex,(C.pOnFirstRemoteVideoDecoded)(unsafe.Pointer(C.onFirstRemoteVideoDecodedCgo)))
-	C.SetOnFirstRemoteAudioFrame(ar.RecordingEnginex,(C.pOnFirstRemoteAudioFrame)(unsafe.Pointer(C.onFirstRemoteAudioFrameCgo)))
-	C.SetOnReceivingStreamStatusChanged(ar.RecordingEnginex,(C.pOnReceivingStreamStatusChanged)(unsafe.Pointer(C.onReceivingStreamStatusChangedCgo)))
-	C.SetOnConnectionLost(ar.RecordingEnginex,(C.pOnConnectionLost)(unsafe.Pointer(C.onConnectionLostCgo)))
-	C.SetOnConnectionInterrupted(ar.RecordingEnginex,(C.pOnConnectionInterrupted)(unsafe.Pointer(C.onConnectionInterruptedCgo)))
+	C.SetOnWarning(ar.RecordingEnginex, (C.pOnWarning)(unsafe.Pointer(C.onWarningCgo)))
+	C.SetOnJoinChannelSuccess(ar.RecordingEnginex, (C.pOnJoinChannelSuccess)(unsafe.Pointer(C.onJoinChannelSuccessCgo)))
+	C.SetOnLeaveChannel(ar.RecordingEnginex, (C.pOnLeaveChannel)(unsafe.Pointer(C.onLeaveChannelCgo)))
+	C.SetOnUserJoined(ar.RecordingEnginex, (C.pOnUserJoined)(unsafe.Pointer(C.onUserJoinedCgo)))
+	C.SetOnUserOffline(ar.RecordingEnginex, (C.pOnUserOffline)(unsafe.Pointer(C.onUserOfflineCgo)))
+	C.SetAudioFrameReceived(ar.RecordingEnginex, (C.pAudioFrameReceived)(unsafe.Pointer(C.audioFrameReceivedCgo)))
+	C.SetVideoFrameReceived(ar.RecordingEnginex, (C.pVideoFrameReceived)(unsafe.Pointer(C.videoFrameReceivedCgo)))
+	C.SetOnActiveSpeaker(ar.RecordingEnginex, (C.pOnActiveSpeaker)(unsafe.Pointer(C.onActiveSpeakerCgo)))
+	C.SetOnAudioVolumeIndication(ar.RecordingEnginex, (C.pOnAudioVolumeIndication)(unsafe.Pointer(C.onAudioVolumeIndicationCgo)))
+	C.SetOnFirstRemoteVideoDecoded(ar.RecordingEnginex, (C.pOnFirstRemoteVideoDecoded)(unsafe.Pointer(C.onFirstRemoteVideoDecodedCgo)))
+	C.SetOnFirstRemoteAudioFrame(ar.RecordingEnginex, (C.pOnFirstRemoteAudioFrame)(unsafe.Pointer(C.onFirstRemoteAudioFrameCgo)))
+	C.SetOnReceivingStreamStatusChanged(ar.RecordingEnginex, (C.pOnReceivingStreamStatusChanged)(unsafe.Pointer(C.onReceivingStreamStatusChangedCgo)))
+	C.SetOnConnectionLost(ar.RecordingEnginex, (C.pOnConnectionLost)(unsafe.Pointer(C.onConnectionLostCgo)))
+	C.SetOnConnectionInterrupted(ar.RecordingEnginex, (C.pOnConnectionInterrupted)(unsafe.Pointer(C.onConnectionInterruptedCgo)))
 
 	funcsMap.Store(ar.RecordingEnginex, ar)
 
 	return ar
 }
 
-func (ar *defaultAgoraRecord) CreateChannel(appId string, channelKey string, name string, uid uint,config RecordingConfig) int {
+func (ar *defaultAgoraRecord) CreateChannel(appId string, channelKey string, name string, uid uint, config RecordingConfig) int {
 	ad := C.CString(appId)
 	chk := C.CString(channelKey)
 	nm := C.CString(name)
 	ccf := RecordingConfigToCgo(config)
-
 
 	rt := C.CreateChannel(ar.RecordingEnginex, ad, chk, nm, C.uint(uid), ccf)
 
@@ -274,7 +271,7 @@ func (ar *defaultAgoraRecord) Stopped() int {
 }
 func (ar *defaultAgoraRecord) UpdateMixModeSetting(width int, height int, isVideoMix bool) {
 	videoMix := 0
-	if isVideoMix{
+	if isVideoMix {
 		videoMix = 1
 	}
 	C.UpdateMixModeSetting(ar.RecordingEnginex, C.int(width), C.int(height), C.int(videoMix))
@@ -372,12 +369,12 @@ func (ar *defaultAgoraRecord) SetOnConnectionInterrupted(onConnectionInterrupted
 	ar.mOnConnectionInterrupted = onConnectionInterrupted
 }
 
-func main() {
-	a := 1
-	fmt.Println(a)
-
-	record := C.CreateRecordingEngine()
-	//C.SetOnErrorEventHandler(record, (C.ponError)(unsafe.Pointer(C.on_error_cgo)))
-	fmt.Println(record, C.SetOnError)
-
-}
+//func main() {
+//	a := 1
+//	fmt.Println(a)
+//
+//	record := C.CreateRecordingEngine()
+//	//C.SetOnErrorEventHandler(record, (C.ponError)(unsafe.Pointer(C.on_error_cgo)))
+//	fmt.Println(record, C.SetOnError)
+//
+//}

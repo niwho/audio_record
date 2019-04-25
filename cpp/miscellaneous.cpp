@@ -18,12 +18,12 @@ int AudioGetType(AudioFrame*frame){
 
 AudioPcmFrame* AudioGetPcmFrame(AudioFrame*frame){
 
-    return (AudioPcmFrame*)(&((((agora::linuxsdk::AudioFrame*)frame))->frame));
+    return (AudioPcmFrame*)(((((agora::linuxsdk::AudioFrame*)frame))->frame.aac));
 }
 
 AudioAacFrame* AudioGetAacFrame(AudioFrame*frame){
 
-    return (AudioAacFrame*)(&((((agora::linuxsdk::AudioFrame*)frame))->frame));
+    return (AudioAacFrame*)(((((agora::linuxsdk::AudioFrame*)frame))->frame.pcm));
 }
 
 unsigned long long PcmFrameGetMs(AudioPcmFrame*frame){
